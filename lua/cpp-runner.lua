@@ -108,4 +108,8 @@ M.run_proj = function()
   post_to(post, true)
 end
 
+M.clear = function()
+  post_to("clr")
+end
+
 return M

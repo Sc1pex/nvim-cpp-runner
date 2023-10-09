@@ -1,8 +1,8 @@
-use axum::extract::Path;
-use axum::routing::post;
-use axum::Router;
-use std::process::{Command, ExitStatus};
-use std::time::Duration;
+use axum::{extract::Path, routing::post, Router};
+use std::{
+    process::{Command, ExitStatus},
+    time::Duration,
+};
 
 fn compile(proj: String) -> bool {
     println!("Compiling {proj}");
@@ -54,7 +54,7 @@ async fn run_handle(Path(name): Path<String>) {
     }
     match run(name.clone()) {
         Ok(duration) => println!("\nDone in {} ms", duration.as_millis()),
-        Err(code) => println!("\nExited with code {code}"),
+        Err(code) => println!("\nExited with {code}"),
     }
 }
 
@@ -91,10 +91,11 @@ async fn create_handle(Path(Create { name, t }): Path<Create>) {
 async fn main() {
     let app = Router::new()
         .route("/run/:name", post(run_handle))
+        .route("/clr", post(|| async { clearscreen::clear().unwrap() }))
         .route("/create/:t/:name", post(create_handle));
 
     axum::Server::bind(&"0.0.0.0:42069".parse().unwrap())
         .serve(app.into_make_service())
         .await
-        .unwrap();
+        .unwrap()
 }
